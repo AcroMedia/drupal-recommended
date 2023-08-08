@@ -28,6 +28,11 @@ copy($templates_path . 'lagoonize/template.env', $project_path . '/.env');
 copy($templates_path . 'lagoonize/template.lagoon.yml', $project_path . '/.lagoon.yml');
 copy($templates_path . 'template.phpunit.xml.dist', $project_path . '/phpunit.xml.dist');
 
+// Copy drupal configurations
+// create webroot and sites/default directories.
+mkdir($project_path . '/' . $default_webroot . '/sites/default', 0755, true); 
+copy($templates_path . 'template.services.yml', $project_path . '/' . $default_webroot . '/sites/default/services.yml');
+
 $token_replacments = [
     '[PROJECTNAME]' => strtolower($default_project_name),
     '[WEBROOT]'     => $default_webroot
