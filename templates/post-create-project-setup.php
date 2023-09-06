@@ -27,6 +27,7 @@ copy($templates_path . 'template.docker-compose.yml', $project_path . '/docker-c
 copy($templates_path . 'lagoonize/template.env', $project_path . '/.env');
 copy($templates_path . 'lagoonize/template.lagoon.yml', $project_path . '/.lagoon.yml');
 copy($templates_path . 'template.phpunit.xml.dist', $project_path . '/phpunit.xml.dist');
+copy($templates_path . 'template.phpcs.xml.dist', $project_path . '/phpcs.xml.dist');
 
 // Copy drupal configurations
 // create webroot and sites/default directories.
