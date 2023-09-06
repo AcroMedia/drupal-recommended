@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<ruleset name="Project Code Standards">
+  <config name="installed_paths" value="vendor/drupal/coder/coder_sniffer/,vendor/slevomat/coding-standard/" />
+
+  <arg name="extensions" value="php,module,inc,install,test,profile,theme,info" />
+
+  <!-- These paths will be used if no paths are passed on the command line -->
+  <file>web/modules/custom</file>
+  <file>web/themes/custom</file>
+
+  <exclude-pattern>*/contrib/*</exclude-pattern>
+  <exclude-pattern>*/.git/*</exclude-pattern>
+  <exclude-pattern>*/css/*</exclude-pattern>
+  <exclude-pattern>*/js/*</exclude-pattern>
+  <exclude-pattern>*/icons/*</exclude-pattern>
+  <exclude-pattern>*/vendor/*</exclude-pattern>
+  <exclude-pattern>*/node_modules/*</exclude-pattern>
+  <exclude-pattern>*/dist/*</exclude-pattern>
+  <exclude-pattern>*/bootstrap/*</exclude-pattern>
+  <exclude-pattern>*.chunk.*</exclude-pattern>
+
+  <!-- For colored cli output -->
+  <arg name="colors"/>
+  <!-- To show where the rule comes from. Equivalent to phpcs -s -->
+  <arg value="sp"/>
+
+  <rule ref="Drupal"/>
+
+  <rule ref="DrupalPractice"/>
+
+</ruleset>
+

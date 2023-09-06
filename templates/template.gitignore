@@ -1,5 +1,8 @@
 #Ignore local files
 .env
+grumphp.yml
+phpcs.xml
+phpunit.xml
 
 web/sites/*/services*.yml
 web/sites/*/settings.local.php
