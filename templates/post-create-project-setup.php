@@ -15,12 +15,20 @@ echo "What is webroot of your project [$default_webroot] :";
 $default_webroot = preg_replace("/\s+|_+/", '-', rtrim(fgets(STDIN))) ?: $default_webroot;
 echo "project webroot: " . $default_webroot . "\n";
 
+echo "Enter your Gitlab personal access token:";
+$personal_access_token = preg_replace("/\s+|_+/", '-', rtrim(fgets(STDIN))) ?: "";
+
+if (!$personal_access_token) {
+  echo "\033[1;33m WARNING! You haven't specified a personal_access_token \n Installation will fail until you update 
+  your auth.json file. \033[0m \n";
+}
+
 echo "Copying template files...\n";
 copy($templates_path . 'template.README.md', $project_path . '/README.md');
 copy($templates_path . 'template.gitlab-ci.yml', $project_path . '/.gitlab-ci.yml');
 copy($templates_path . 'template.gitignore', $project_path . '/.gitignore');
 copy($templates_path . 'template.composer.json', $project_path . '/composer.json');
-copy($templates_path . 'template.composer.lock', $project_path . '/composer.lock');
+copy($templates_path . 'template.auth.json', $project_path . '/auth.json');
 copy($templates_path . 'template.grumphp.yml.dist', $project_path . '/grumphp.yml.dist');
 copy($templates_path . 'template.lando.yml', $project_path . '/.lando.yml');
 copy($templates_path . 'template.docker-compose.yml', $project_path . '/docker-compose.yml');
@@ -31,12 +39,14 @@ copy($templates_path . 'template.phpcs.xml.dist', $project_path . '/phpcs.xml.di
 
 // Copy drupal configurations
 // create webroot and sites/default directories.
-mkdir($project_path . '/' . $default_webroot . '/sites/default', 0755, true); 
+mkdir($project_path . '/' . $default_webroot . '/sites/default', 0755, true);
 copy($templates_path . 'template.services.yml', $project_path . '/' . $default_webroot . '/sites/default/services.yml');
 
+// Replace tokens with updated values
 $token_replacments = [
-    '[PROJECTNAME]' => strtolower($default_project_name),
-    '[WEBROOT]'     => $default_webroot
+  '[PROJECTNAME]'  => strtolower($default_project_name),
+  '[WEBROOT]'      => $default_webroot,
+  '[GITLAB_TOKEN]' => $personal_access_token
 ];
 
 replace_file_token($project_path . '/.lando.yml', $token_replacments);
@@ -47,6 +57,7 @@ replace_file_token($project_path . '/.lagoon/php.dockerfile', $token_replacments
 replace_file_token($project_path . '/.env', $token_replacments);
 replace_file_token($project_path . '/composer.json', $token_replacments);
 replace_file_token($project_path . '/phpunit.xml.dist', $token_replacments);
+replace_file_token($project_path . '/auth.json', $token_replacments);
 
 delete_files('composer.lock');
 delete_files($templates_path);
@@ -60,13 +71,14 @@ echo "Finishing the project setup!\n";
  * @param $replacement
  *   ['TOKEN' => 'Value']
  */
-function replace_file_token($filename, $replacement) {
-    $content = file_get_contents($filename);
-    foreach($replacement as $token => $value) {
-        $content_chunks = explode($token, $content);
-        $content = implode($value, $content_chunks);
-    }
-    file_put_contents($filename, $content);
+function replace_file_token($filename, $replacement)
+{
+  $content = file_get_contents($filename);
+  foreach ($replacement as $token => $value) {
+    $content_chunks = explode($token, $content);
+    $content = implode($value, $content_chunks);
+  }
+  file_put_contents($filename, $content);
 }
 
 /**
@@ -74,14 +86,15 @@ function replace_file_token($filename, $replacement) {
  *
  * @param $target
  */
-function delete_files($target) {
-    if(is_dir($target)){
-        $files = glob( $target . '*', GLOB_MARK ); //GLOB_MARK adds a slash to directories returned
-        foreach( $files as $file ){
-            delete_files( $file );
-        }
-        rmdir( $target );
-    } elseif(is_file($target)) {
-        unlink( $target );
+function delete_files($target)
+{
+  if (is_dir($target)) {
+    $files = glob($target . '*', GLOB_MARK); //GLOB_MARK adds a slash to directories returned
+    foreach ($files as $file) {
+      delete_files($file);
     }
+    rmdir($target);
+  } elseif (is_file($target)) {
+    unlink($target);
+  }
 }

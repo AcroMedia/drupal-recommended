@@ -1,0 +1,5 @@
+{
+  "gitlab-token": {
+    "git.acromedia.com": "[GITLAB_TOKEN]"
+  }
+}

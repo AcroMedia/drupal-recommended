@@ -53,5 +53,9 @@ web/web.config
 *.sql.gz
 vendor
 
-# Ignore phpstorm settings file.
+# Phpstorm ignore
 .idea
+# MacOS ignore
+.DS_Store
+# Composer authignore
+auth.json

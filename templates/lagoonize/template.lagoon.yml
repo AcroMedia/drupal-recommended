@@ -9,12 +9,12 @@ tasks:
 
   post-rollout:
     - run:
-        name: IF no Drupal installed and we are not master branch, sync from master branch
+        name: IF no Drupal installed and we are not production branch, sync from production branch
         command: |
-          if tables=$(drush sqlq "show tables like 'node';") && [ -z "$tables" ] && [[ "$LAGOON_ENVIRONMENT" != "master" ]]; then
-              # no drupal installed, sync DB from master branch
-              drush -y sql-sync @lagoon.$LAGOON_PROJECT-master @self
-              drush -y rsync @lagoon.$LAGOON_PROJECT-master:web/sites/default/files/ @self:%files
+          if tables=$(drush sqlq "show tables like 'node';") && [ -z "$tables" ] && [[ "$LAGOON_ENVIRONMENT" != "production" ]]; then
+              # no drupal installed, sync DB from production branch
+              drush -y sql-sync @lagoon.$LAGOON_PROJECT-production @self
+              drush -y rsync @lagoon.$LAGOON_PROJECT-production:web/sites/default/files/ @self:%files
           fi
         service: cli
     - run:
