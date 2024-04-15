@@ -1,4 +1,4 @@
-docker-compose-yaml: docker-compose.yml
+docker-compose-yaml: .lagoon/docker-compose.yml
 
 project: [PROJECTNAME]
 
@@ -6,7 +6,6 @@ api: https://api.lagoon-prd.acromedia.com/graphql
 ssh: ssh.lagoon-prd.acromedia.com:22
 
 tasks:
-
   post-rollout:
     - run:
         name: IF no Drupal installed and we are not production branch, sync from production branch
