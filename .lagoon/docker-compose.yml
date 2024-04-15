@@ -1,3 +1,8 @@
+#
+# I am not a real docker-compose file.
+# Amazee's Lagoon service uses this file for config.
+# But doesn't actually use docker-compose
+#
 version: '2.3'
 
 x-volumes:
