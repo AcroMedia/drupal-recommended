@@ -10,9 +10,14 @@
   ],
   "require": {},
   "scripts": {
+    "dev-create": [
+      "rm -rf ./test",
+      "php ./bin/post-create-project-setup.php --local",
+      "php ./bin/install.php --local"
+    ],
     "post-create-project-cmd": [
-      "php ./templates/post-create-project-setup.php",
-      "composer install --ignore-platform-reqs"
+      "php ./bin/post-create-project-setup.php",
+      "php ./bin/install.php"
     ]
   }
 }

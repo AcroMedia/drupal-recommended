@@ -8,12 +8,7 @@ Composer create template for starting new decoupled drupal builds.
 
 ## Development
 ### Run the script on local
-- clone the repo, make alterations as needed
-- copy the dir into a new location. `cp -r gesso-drupal testing-gesso-drupal`
-- enter to new project root `cd testing-gesso-drupal`
-- Run the setup script `composer run-script post-create-project-cmd`
-  - This will create the project within testing-gesso-drupal hence why we create a copy
-    to not mess up the repo code.
+- `php dev-create`: Creates a local project under `test/project`, will handle project deletion prior to running.
 
 ## Security
 
