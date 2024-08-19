@@ -1,7 +1,19 @@
 <?php
-$project_path = getcwd();
-$templates_path = $project_path . '/templates/';
+include 'utils.php';
+
+// Check if it's a local run
+$is_dev_mode = isLocalRun($argv);
+
+if ($is_dev_mode) {
+  echo "Running in local mode\n";
+}
+
+$base_path = getcwd();
+$project_path = $is_dev_mode ? $base_path . '/test/project' : $base_path;
+$templates_path = $base_path . '/templates/';
 $project_path_trimmed = explode('/', $project_path);
+
+// Set default values
 $default_project_name = $project_path_trimmed[count($project_path_trimmed) - 1];
 $default_webroot = 'web';
 
@@ -24,6 +36,13 @@ if (!$personal_access_token) {
 }
 
 echo "Copying template files...\n";
+if ($is_dev_mode) {
+  // Local mode, create a test project directory
+  // under test directory to ensure we don't overwrite the current directory
+  mkdir($project_path, 0777, true);
+  copyDir($base_path . '/.lagoon', $project_path . '/.lagoon');
+  copyDir($base_path . '/assets', $project_path . '/assets');
+}
 copy($templates_path . 'template.README.md', $project_path . '/README.md');
 copy($templates_path . 'template.gitlab-ci.yml', $project_path . '/.gitlab-ci.yml');
 copy($templates_path . 'template.gitignore', $project_path . '/.gitignore');
@@ -36,8 +55,10 @@ copy($templates_path . 'lagoonize/template.lagoon.yml', $project_path . '/.lagoo
 copy($templates_path . 'template.phpunit.xml.dist', $project_path . '/phpunit.xml.dist');
 copy($templates_path . 'template.phpcs.xml.dist', $project_path . '/phpcs.xml.dist');
 
+
 // Copy drupal configurations
 // create webroot and sites/default directories.
+echo "Copying default Drupal configuration files...\n";
 mkdir($project_path . '/' . $default_webroot . '/sites/default', 0755, true);
 copy($templates_path . 'template.services.yml', $project_path . '/' . $default_webroot . '/sites/default/services.yml');
 
@@ -48,6 +69,7 @@ $token_replacments = [
   '[GITLAB_TOKEN]' => $personal_access_token
 ];
 
+echo "Replacing tokens in files...\n";
 replace_file_token($project_path . '/.lando.yml', $token_replacments);
 replace_file_token($project_path . '/.lagoon.yml', $token_replacments);
 replace_file_token($project_path . '/.lagoon/cli.dockerfile', $token_replacments);
@@ -58,42 +80,14 @@ replace_file_token($project_path . '/composer.json', $token_replacments);
 replace_file_token($project_path . '/phpunit.xml.dist', $token_replacments);
 replace_file_token($project_path . '/auth.json', $token_replacments);
 
-delete_files('composer.lock');
-delete_files($templates_path);
-
 echo "Finishing the project setup!\n";
 
-/**
- * Replace file tokens with value.
- *
- * @param $filename
- * @param $replacement
- *   ['TOKEN' => 'Value']
- */
-function replace_file_token($filename, $replacement)
-{
-  $content = file_get_contents($filename);
-  foreach ($replacement as $token => $value) {
-    $content_chunks = explode($token, $content);
-    $content = implode($value, $content_chunks);
-  }
-  file_put_contents($filename, $content);
+if ($is_dev_mode) {
+  // Local mode, exit after copying files
+  // to ensure we don't run cleanup
+  echo "Running in dev mode, skipping file cleanup.\n";
+  exit;
 }
 
-/**
- * PHP delete function that deals with directories recursively
- *
- * @param $target
- */
-function delete_files($target)
-{
-  if (is_dir($target)) {
-    $files = glob($target . '*', GLOB_MARK); //GLOB_MARK adds a slash to directories returned
-    foreach ($files as $file) {
-      delete_files($file);
-    }
-    rmdir($target);
-  } elseif (is_file($target)) {
-    unlink($target);
-  }
-}
+delete_files('composer.lock');
+delete_files($templates_path);

@@ -1,2 +1,5 @@
 vendor
 .idea
+
+# Ignore test directory used for local script testing
+test
