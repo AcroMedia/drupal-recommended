@@ -18,6 +18,10 @@ $default_project_name = $project_path_trimmed[count($project_path_trimmed) - 1];
 $default_webroot = 'web';
 
 echo "Setting up your drupal project!\n";
+if ($is_dev_mode) {
+  // Local mode, create a test project directory
+  mkdir($project_path, 0777, true);
+}
 
 echo "What is the name of your project [$default_project_name] :";
 $default_project_name = preg_replace("/\s+|_+/", '-', rtrim(fgets(STDIN))) ?: $default_project_name;
@@ -27,13 +31,8 @@ echo "What is webroot of your project [$default_webroot] :";
 $default_webroot = preg_replace("/\s+|_+/", '-', rtrim(fgets(STDIN))) ?: $default_webroot;
 echo "project webroot: " . $default_webroot . "\n";
 
-// Check for a token argument or prompt for it
-$token = null;
-foreach ($argv as $arg) {
-    if (strpos($arg, '--token=') === 0) {
-        $token = substr($arg, strlen('--token='));
-    }
-}
+// Check for a token env variable or prompt for it
+$token = getenv('TOKEN');
 
 if (!$token) {
     echo "Enter your Gitlab personal access token (leave blank to skip):";
@@ -56,9 +55,7 @@ if (!empty($token)) {
 
 echo "Copying template files...\n";
 if ($is_dev_mode) {
-  // Local mode, create a test project directory
-  // under test directory to ensure we don't overwrite the current directory
-  mkdir($project_path, 0777, true);
+  // In dev mode we need to copy these to test/project dir
   copyDir($base_path . '/.lagoon', $project_path . '/.lagoon');
   copyDir($base_path . '/assets', $project_path . '/assets');
 }
