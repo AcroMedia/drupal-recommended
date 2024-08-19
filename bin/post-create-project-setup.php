@@ -27,12 +27,31 @@ echo "What is webroot of your project [$default_webroot] :";
 $default_webroot = preg_replace("/\s+|_+/", '-', rtrim(fgets(STDIN))) ?: $default_webroot;
 echo "project webroot: " . $default_webroot . "\n";
 
-echo "Enter your Gitlab personal access token:";
-$personal_access_token = preg_replace("/\s+|_+/", '-', rtrim(fgets(STDIN))) ?: "";
+// Check for a token argument or prompt for it
+$token = null;
+foreach ($argv as $arg) {
+    if (strpos($arg, '--token=') === 0) {
+        $token = substr($arg, strlen('--token='));
+    }
+}
 
-if (!$personal_access_token) {
-  echo "\033[1;33m WARNING! You haven't specified a personal_access_token \n Installation will fail until you update 
-  your auth.json file. \033[0m \n";
+if (!$token) {
+    echo "Enter your Gitlab personal access token (leave blank to skip):";
+    $token = rtrim(fgets(STDIN));
+}
+
+if (!empty($token)) {
+    echo "Creating auth.json file with provided token...\n";
+    copy($templates_path . 'template.auth.json', $project_path . '/auth.json');
+    $token_replacements = [
+        '[GITLAB_TOKEN]' => $token
+    ];
+    replace_file_token($project_path . '/auth.json', $token_replacements);
+} else {
+    echo "\033[1;33mWARNING: No personal access token provided.\n";
+    echo "You will need to set up authentication manually if required.\n";
+    echo "You can do this by creating an auth.json file in your project root\n";
+    echo "or by setting up global Composer authentication.\033[0m\n";
 }
 
 echo "Copying template files...\n";
@@ -47,7 +66,6 @@ copy($templates_path . 'template.README.md', $project_path . '/README.md');
 copy($templates_path . 'template.gitlab-ci.yml', $project_path . '/.gitlab-ci.yml');
 copy($templates_path . 'template.gitignore', $project_path . '/.gitignore');
 copy($templates_path . 'template.composer.json', $project_path . '/composer.json');
-copy($templates_path . 'template.auth.json', $project_path . '/auth.json');
 copy($templates_path . 'template.grumphp.yml.dist', $project_path . '/grumphp.yml.dist');
 copy($templates_path . 'template.lando.yml', $project_path . '/.lando.yml');
 copy($templates_path . 'lagoonize/template.env', $project_path . '/.env');
@@ -66,7 +84,6 @@ copy($templates_path . 'template.services.yml', $project_path . '/' . $default_w
 $token_replacments = [
   '[PROJECTNAME]'  => strtolower($default_project_name),
   '[WEBROOT]'      => $default_webroot,
-  '[GITLAB_TOKEN]' => $personal_access_token
 ];
 
 echo "Replacing tokens in files...\n";
@@ -78,7 +95,6 @@ replace_file_token($project_path . '/.lagoon/php.dockerfile', $token_replacments
 replace_file_token($project_path . '/.env', $token_replacments);
 replace_file_token($project_path . '/composer.json', $token_replacments);
 replace_file_token($project_path . '/phpunit.xml.dist', $token_replacments);
-replace_file_token($project_path . '/auth.json', $token_replacments);
 
 echo "Finishing the project setup!\n";
 
