@@ -54,7 +54,9 @@
     "drupal/svg_image_field": "^2.2",
     "drupal/webform": "^6.2",
     "drupal/webform_rest": "^4.0",
-    "drush/drush": "^11.4"
+    "drush/drush": "^11.4",
+    "drupal/robots_noindex_nofollow": "^2.0",
+    "drupal/admin_ui_only": "^1.0'"
   },
   "require-dev": {
     "drupal/core-dev": "^10.0",
@@ -155,6 +157,9 @@
     },
     "drupal/graphql_core_schema": {
       "EntityQueryRevisionMode is not evaluated correctly": "https://www.drupal.org/files/issues/2023-08-10/fix-entity-revision-resolving0001.patch"
+    },
+    "drupal/admin_ui_only": {
+      "Add permission for users to skip access check": "https://www.drupal.org/files/issues/2024-08-28/3470769-4-new-permission.patch"
     }
   },
   "suggest": {
