@@ -158,6 +158,9 @@
     "drupal/graphql_core_schema": {
       "EntityQueryRevisionMode is not evaluated correctly": "https://www.drupal.org/files/issues/2023-08-10/fix-entity-revision-resolving0001.patch"
     },
+    "webonyx/graphql-php": {
+      "Avoid calling defined functions named like lazily loaded types": "https://www.drupal.org/files/issues/2024-11-21/graphql-php-1194.patch"
+    },
     "drupal/admin_ui_only": {
       "Add permission for users to skip access check": "https://www.drupal.org/files/issues/2024-08-28/3470769-4-new-permission.patch"
     }
